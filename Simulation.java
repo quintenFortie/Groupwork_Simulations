@@ -73,8 +73,14 @@ public class Simulation implements Patient {
 
     }
 
-    public static
+    public static schedulePatient(){
 
+    }
+
+    public static sortPatientsOnAppTime(){
+
+
+    }
 
 
 
