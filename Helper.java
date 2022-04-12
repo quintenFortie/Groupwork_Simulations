@@ -108,7 +108,5 @@ public class Helper extends Simulation {
 
     }
 
-    /*
-    more methods required here
-     */
+
 }

@@ -14,30 +14,25 @@ public class Simulation {
      */
 
     double weightUr =1/9;
-    int W;
-    int R;
+    int W; //weeks to simulate
+    int R; //number of replications
+    int rule; //the appointment scheduling rule to apply
 
-    /*
-    more variables required here
-     */
 
-    int rule;
-    // no clue what to do with this variable:
-    // Slot** weekschedule
-
-    /*
-    more variables required here
-     */
+    // Initialize variables
+    double avgElectiveAppWT = 0;
+    double avgElectiveScanWT = 0;
+    double avgUrgentScanWT = 0;
+    double avgOT = 0;
+    int numberOfUrgentPatientsPlanned = 0;
+    int numberOfElectivePatientsPlanned = 0;
+    // Initialize arrays
+    //moet nog gebeuren
 
     List<Patient> patients = new ArrayList<Patient>();
     List<Patient> patient = new ArrayList<Patient>(); //iterator?
     double movingAvgElectiveAppWT;
 
-    /*
-    more variables required here
-     */
-
-    int numberOfUrgentPatientsPlanned;
 
 
     //////////////////////////////////////////////////////////////////////////  methods ///////////////////////////////////////////////////////////////////////////
