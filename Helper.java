@@ -1,4 +1,8 @@
 public class Helper {
-    //test;
-    //test Arne
+    // variables for helper class
+
+    double startTime;
+    double appTime;
+    int patientType;
+    int slotType;
 }
