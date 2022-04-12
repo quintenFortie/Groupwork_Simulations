@@ -2,8 +2,10 @@ public class Patient {
 
     // variables for patient class
     int nr;
-    int patientType;
+    int patientType; // 0 = none // 1 = elective // 2 = urgent
     int scanType;
+    // ELECTIVE  : 0 = not applicable
+    // URGENT : 0 = brain // 1 = lumbar // 2 = cervical // 3 = abdomen // 4 = others
     int callWeek;
     int callDay;
     double callTime;

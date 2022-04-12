@@ -1,7 +1,7 @@
-import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
-public class Simulation implements Patient {
+public class Simulation {
     String inputFileName;
     int D = 6;
     int amountOTSlotsPerDay =10;
@@ -29,8 +29,8 @@ public class Simulation implements Patient {
     more variables required here
      */
 
-    List<Patient> patients = new ArrayList<>();
-    List<Patient> patient = new ArrayList<>(); //iterator?
+    List<Patient> patients = new ArrayList<Patient>();
+    List<Patient> patient = new ArrayList<Patient>(); //iterator?
     double movingAvgElectiveAppWT;
 
     /*
@@ -62,23 +62,22 @@ public class Simulation implements Patient {
     }
 
     public static int getRandomScanType(){
-
+        return Integer.parseInt(null);
     }
 
-    public static generatePatients(){
+    public static void generatePatients(){
 
     }
 
     public static int getNextSlotNrFromTime(int day, int patientType, double time){
+        return Integer.parseInt(null);
+    }
+
+    public static void schedulePatient(){
 
     }
 
-    public static schedulePatient(){
-
-    }
-
-    public static sortPatientsOnAppTime(){
-
+    public static void sortPatientsOnAppTime(){
 
     }
 
