@@ -1,5 +1,8 @@
 import java.util.Random;
 
+// helper class is a class to get random variables according to a certain distribution
+
+
 public class Helper extends Simulation {
     // variables for helper class
     //none
