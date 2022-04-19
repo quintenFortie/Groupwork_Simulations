@@ -4,99 +4,75 @@ import java.util.Random;
 
 
 public class Helper extends Simulation {
-    // variables for helper class
-    //none
+    public static double Exponential_distribution (double lambda, Random r){
+        double j1 = (float) r.nextInt(1000+1)/1000;
+        if (j1 == 0)
+            j1 += 0.0001;
+        double j2 = -Math.log(j1)/lambda;
 
-    // methods for Helper class
-
-    /* COUNTER */
-
-    public int i6;
-    private double j1, j2, j3;
-
-
-    public static Random rnd;
-
-    public Helper(long seed){
-        rnd = new Random(seed);
+        return j2;
     }
-
-    public int poissonDistribution(double lambda){
-        double k, L;
-        int p;
-        j1 = (Math.round(rnd.nextDouble()*1000))/1000.0;
-        k = 0;
-        L = Math.exp(-lambda);
-        j3 = 0;
-        do
-        {
+    public static int Poisson_distribution(double lambda, Random r){     // INVERSION METHOD POISSON DISTRIBUTION
+        double j1 = (float) r.nextInt(1000+1)/1000;
+        int k = 0;
+        double L = Math.exp(-lambda);
+        double j3 = 0;
+        int p,i;
+        double j2;
+        do{
             j2 = L * Math.pow(lambda, k);
             p = 1;
-            for (i6 = 0; i6 <= k; i6++)
-            {   if (i6 == 0)
+            for (i = 0; i <= k; i++){   if (i == 0)
                 p = 1;
             else
-                p *= i6;
-
+                p *= i;
             }
             j2 /= p;
             j3 += j2;
             k++;
         } while (j1 >= j3);
 
-        return (int) (k-1);
-
+        return k-1;
     }
-    int normal_distribution(double mean, double stdev)
-    {   // TO MODEL BASED ON CUMULATIVE DENSITY FUNCTION OF NORMAL DISTRIBUTION BASED ON BOOK OF SHELDON ROSS, Simulation, The polar method, p80.
 
+    public static int  Normal_distribution(double mean, double stdev, Random r){   // TO MODEL BASED ON CUMULATIVE DENSITY FUNCTION OF NORMAL DISTRIBUTION BASED ON BOOK OF SHELDON ROSS, Simulation, The polar method, p80.
         double v1, v2, t;
-        int x;
-        do
-        {
-            v1 = (double) (rnd.nextDouble())*2;
+        do{
+            v1 = (float) r.nextInt(1000+1)*2;
             v1 /= 1000;
             v1 -= 1;
-            v2 = (double) (rnd.nextDouble())*2;
+            v2 = (float) r.nextInt(1000+1)*2;
             v2 /= 1000;
             v2 -= 1;
             t=v1*v1+v2*v2;
         }
         while(t>=1||t==0);
         double multiplier = Math.sqrt(-2*Math.log(t)/t);
-        x = (int) (v1 * multiplier * stdev + mean);
-        return x;
-
-
+        return (int) (v1 * multiplier * stdev + mean);
     }
 
-    int bernouilli_distribution(double prob)     // INVERSION METHOD BERNOUILLI DISTRIBUTION
-    {   j1 = (Math.round(rnd.nextDouble()*1000))/1000.0;;
+    public static int  Bernouilli_distribution(double prob, Random r){     // INVERSION METHOD BERNOUILLI DISTRIBUTION
+        double j1 = (float) r.nextInt(1000+1)/1000;
         if (j1 < prob)
             return 0;
         else
             return 1;
-
-
     }
 
-    int uniform_distribution(double a, double b) // INVERSION METHOD UNIFORM DISTRIBUTION
-    {   int x;
-        j1 = (Math.round(rnd.nextDouble()*1000))/1000.0;
-        x = (int) (a + (b-a) * j1);
-
-        return x;
+    public static int  Uniform_distribution(double a, double b, Random r){ // INVERSION METHOD UNIFORM DISTRIBUTION
+        double j1 = (float) r.nextInt(1000+1)/1000;
+        return (int) (a + (b-a) * j1);
     }
 
 
-    int triangular_distribution(int a, int b, int c) // INVERSION METHOD TRIANGULAR DISTRIBUTION
-    {   double mean, stdev;
+    public static int  Triangular_distribution(int a, int b, int c, Random r){ // INVERSION METHOD TRIANGULAR DISTRIBUTION
+        double mean, stdev;
         double x, L;
 
         mean = (a+b+c)/3;
         stdev = (Math.pow(a,2)+Math.pow(b,2)+Math.pow(c,2)-a*b-a*c-b*c)/18;
         stdev = Math.sqrt(stdev);
-        j1 = (Math.round(rnd.nextDouble()*1000))/1000.0;;
+        double j1 = (float) r.nextInt(1000+1)/1000;
         x = a;
 
         do
@@ -107,9 +83,7 @@ public class Helper extends Simulation {
             x++;
         } while (j1 >= L);
 
-        return (int) (x-1);
+        return (int) x-1;
 
     }
-
-
 }
