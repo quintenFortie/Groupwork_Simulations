@@ -28,17 +28,14 @@ public class Simulation {
     double stdevUrgentDuration[] = {2.5, 1.0, 2.5, 1.0, 4.5};
     double changes_frequency_scanType[] = {0.70, 0.10, 0.10, 0.05, 0.05};    // frequency per scan type;
     double cumulativeProbUrgentType[] = {0.70, 0.80, 0.90, 0.95, 1.0};
-    double weightUr = 1.0/9.0;               // weight assigned to the urgent patients
-    double weightEl = 1 - weightUr;        // weight assigned to elective patients
+    double weightUr = 1.0/9.0;              // weight assigned to the urgent patients
+    double weightEl = 1 - weightUr;         // weight assigned to elective patients
+    double k_sigma = 0.5;                   // parameter used for the fourth benchmarking rule --> assumed to be 0.5 (given in the assignment)
 
     /* VARIABLES WE HAVE TO SET OURSELVES */
     int W = 10;                              // weeks to simulate
     int R = 1;                              // number of replications
     int rule = 1;                           // the appointment scheduling rule to apply
-    double k_sigma = 0.5;                   // parameter used for the fourth benchmarking rule
-
-    // Deze heb ik er zelf bijgezet -- kijken jullie na?? //
-    Slot weekSchedule[][];              // 2-dimensional array, filled in by reading in an inputfile
 
     // Initialize variables
     double avgElectiveAppWT = 0;
@@ -51,11 +48,14 @@ public class Simulation {
 
 
     // Initialize arrays //
-    weekSchedule = new Slot*[D];
-    for(d = 0; d < D; d++){
-        weekSchedule[d] = new Slot[S];
-    }
-    // Week schedule moet nog geinitialiseerd worden //
+    Slot weekSchedule[][] = new Slot [D][S];    // 2-dimensional array, filled in by reading in an inputfile
+
+    // in C++ - file was dit het volgende:
+    // klopt het wat wij doen???
+    // weekSchedule = new Slot*[D];
+    // for(d = 0; d < D; d++){
+    //    weekSchedule[d] = new Slot[S];
+    // }
 
     double movingAvgElectiveAppWT[] = new double[W];
     double movingAvgElectiveScanWT[] = new double[W];
@@ -68,10 +68,6 @@ public class Simulation {
     double movingAvgElectiveAppWT;
 
     Random random = new Random();
-
-
-    private Helper helper = new Helper();
-
 
     //////////////////////////////////////////////////////////////////////////  methods ///////////////////////////////////////////////////////////////////////////
 
@@ -174,9 +170,6 @@ public class Simulation {
                         }
                     }else if(rule == 4){
                         // TODO: Benchmark rule
-                        // opzoeken op internet welke waarde nemen voor k_sigma
-                        // k_sigma > 0 --> all patients arrive before the start of the slot time
-                        // k_sigma < 0 --> all patients arrive after the start of the slot time
                         weekSchedule[d][s].appTime = time - k_sigma * stdevElectiveDuration;
                     }
                 }
