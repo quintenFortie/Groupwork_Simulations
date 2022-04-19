@@ -9,19 +9,20 @@ resetSystem
 
 runOneSimulation
     - Niet klaar
+    - Delphine, Laurien en Sean aan bezig
 
 getRandomScanType
-    - niet klaar
-    - Laurien, Sean en delphine aan bezig
+    - klaar
 
 generatePatients
-    - niet klaar
+    - klaar
 
 getNextSlotNrFromTime
-    - niet klaar
+    - klaar
 
 schedulePatients
     - niet klaar
+    - Quinten en co aan bezig
 
 sortPatientsOnAppTime
     - niet klaar
