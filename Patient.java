@@ -57,13 +57,33 @@ public class Patient {
 
     // method to return the appointment waiting time
 
-    static void getAppWT(){
-
+    public double getAppWT(){
+        double d = 0;
+        if(slotNr != -1){
+            d = (((scanWeek - callWeek)*7 + scanDay - callDay)*24 + appTime - callTime); // in hours
+        }else{
+            System.out.printf("CAN NOT CALCULATE APPOINTMENT WT OF PATIENT %d", nr);
+            System.exit(1);
+        }
+        return d;
     }
 
     // method to return the scan waiting time
-    static void getScanWT(){
-
+    public double getScanWT(){
+        double d = 0;
+        if(scanTime != 0){
+            double wt = 0;
+            if(patientType == 1){ // elective
+                wt = scanTime - (appTime + tardiness);
+            }else{ // urgent
+                wt = scanTime - callTime;
+            }
+            d =  Math.max(0.0,wt);
+        }else{
+            System.out.printf("CAN NOT CALCULATE SCAN WT OF PATIENT %d", nr);  // in hours
+            System.exit(1);
+        }
+        return d;
     }
 
 }

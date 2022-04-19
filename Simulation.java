@@ -209,31 +209,32 @@ public class Simulation {
         double prevScanEndTime = 0;
         boolean prevIsNoShow = false;
         // go over arrival events (i.e. the moment the patient arrives at the hospital)
-        for(Patient patients.get(0); patient < patients.size(); patient++){
-            if(patient->scanWeek == -1){ // stop at the first unplanned patient
+        for(int i = 0; i< patients.size(); i++){
+            Patient patient = patients.get(i);
+            if(patient.scanWeek == -1){ // stop at the first unplanned patient
                 break;
             }
 
-            arrivalTime = (double) patient->appTime + patient->tardiness;
+            arrivalTime = patient.appTime + patient.tardiness;
             // SCAN WT
-            if(!patient->isNoShow){
-                if(patient->scanWeek != prevWeek || patient->scanDay != prevDay){
-                    patient->scanTime = arrivalTime;
+            if(!patient.isNoShow){ // als de patient opdaagt
+                if(patient.scanWeek != prevWeek || patient.scanDay != prevDay){
+                    patient.scanTime = arrivalTime;
                 } else{
                     if(prevIsNoShow){
-                        patient->scanTime =  max(weekSchedule[patient->scanDay][patient->slotNr].startTime, max(prevScanEndTime,arrivalTime)); // note we assume we wait at least 15minutes on a no-show patient to see whether he shows or is just late
+                        patient.scanTime =  Math.max(weekSchedule[patient.scanDay][patient.slotNr].startTime, max(prevScanEndTime,arrivalTime)); // note we assume we wait at least 15minutes on a no-show patient to see whether he shows or is just late
                     }else{
-                        patient->scanTime = max(prevScanEndTime,arrivalTime);
+                        patient.scanTime = Math.max(prevScanEndTime,arrivalTime);
                     }
                 }
-                wt = patient->getScanWT();
-                if(patient->patientType == 1){
-                    movingAvgElectiveScanWT[patient->scanWeek] += wt;
+                wt = patient.getScanWT();
+                if(patient.patientType == 1){
+                    movingAvgElectiveScanWT[patient.scanWeek] += wt;
                 }else{
-                    movingAvgUrgentScanWT[patient->scanWeek] += wt;
+                    movingAvgUrgentScanWT[patient.scanWeek] += wt;
                 }
-                numberOfPatientsWeek[patient->patientType - 1]++;
-                if(patient->patientType == 1){
+                numberOfPatientsWeek[patient.patientType - 1]++;
+                if(patient.patientType == 1){
                     avgElectiveScanWT += wt;
                 }else{
                     avgUrgentScanWT += wt;
