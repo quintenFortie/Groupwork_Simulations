@@ -28,7 +28,7 @@ public class Simulation {
     double stdevUrgentDuration[] = {2.5, 1.0, 2.5, 1.0, 4.5};
     double r[] = {0.70, 0.10, 0.10, 0.05, 0.05};    // frequency per scan type;
     double cumulativeProbUrgentType[] = {0.70, 0.80, 0.90, 0.95, 1.0};
-    double weightUr = 1.0/9;               // weight assigned to the urgent patients
+    double weightUr = 1.0/9.0;               // weight assigned to the urgent patients
     double weightEl = 1 - weightUr;        // weight assigned to elective patients
 
     /* VARIABLES WE HAVE TO SET OURSELVES */
@@ -50,6 +50,10 @@ public class Simulation {
 
 
     // Initialize arrays //
+    weekSchedule = new Slot*[D];
+    for(d = 0; d < D; d++){
+        weekSchedule[d] = new Slot[S];
+    }
     // Week schedule moet nog geinitialiseerd worden //
 
     double movingAvgElectiveAppWT[] = new double[W];
