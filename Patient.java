@@ -16,7 +16,19 @@ public class Patient {
     double tardiness;
     boolean isNoShow;
     double scanTime = -1;
-    double duration;
+    double durationScan;
+
+    public Patient(int counter, int ptype, int stype, int w, int d, double cTime, double tard, boolean noShow, double duration_scan) {
+        nr = counter;
+        patientType = ptype;
+        scanType = stype;
+        scanWeek = w;
+        scanDay = d;
+        callTime = cTime;
+        tardiness = tard;
+        isNoShow = noShow;
+        durationScan = duration_scan;
+    }
 
     // method to return the appointment waiting time
 
