@@ -21,8 +21,6 @@ public class Helper extends Simulation {
         rnd = new Random(seed);
     }
 
-
-
     public int poissonDistribution(double lambda){
         double k, L;
         int p;
