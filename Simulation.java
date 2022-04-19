@@ -45,8 +45,6 @@ public class Simulation {
     int numberOfUrgentPatientsPlanned = 0;
     int numberOfElectivePatientsPlanned = 0;
 
-
-
     // Initialize arrays //
     Slot weekSchedule[][] = new Slot [D][S];    // 2-dimensional array, filled in by reading in an inputfile
 

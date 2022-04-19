@@ -1,0 +1,27 @@
+runSimulations
+    - niet klaar
+
+setWeekSchedule
+    - klaar
+
+resetSystem
+    - klaar
+
+runOneSimulation
+    - Niet klaar
+
+getRandomScanType
+    - niet klaar
+    - Laurien, Sean en delphine aan bezig
+
+generatePatients
+    - niet klaar
+
+getNextSlotNrFromTime
+    - niet klaar
+
+schedulePatients
+    - niet klaar
+
+sortPatientsOnAppTime
+    - niet klaar
