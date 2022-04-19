@@ -200,6 +200,99 @@ public class Simulation {
         generatePatients();         // create patient arrival events (elective patients call, urgent patient arrive at the hospital)
         schedulePatients();         // schedule urgent and elective patients in slots based on their arrival events => detrmine the appointment wait time
         sortPatientsOnAppTime();   // sort patients on their appointment time (unscheduled patients are grouped at the end of the list)
+
+        // determine scan wait time per patient and overtime per day
+        int prevWeek = 0; int prevDay = -1;
+        int numberOfPatientsWeek[] = {0,0};
+        int numberOfPatients[] = {0,0};
+        double arrivalTime, wt;
+        double prevScanEndTime = 0;
+        boolean prevIsNoShow = false;
+        // go over arrival events (i.e. the moment the patient arrives at the hospital)
+        for(Patient patients.get(0); patient < patients.size(); patient++){
+            if(patient->scanWeek == -1){ // stop at the first unplanned patient
+                break;
+            }
+
+            arrivalTime = (double) patient->appTime + patient->tardiness;
+            // SCAN WT
+            if(!patient->isNoShow){
+                if(patient->scanWeek != prevWeek || patient->scanDay != prevDay){
+                    patient->scanTime = arrivalTime;
+                } else{
+                    if(prevIsNoShow){
+                        patient->scanTime =  max(weekSchedule[patient->scanDay][patient->slotNr].startTime, max(prevScanEndTime,arrivalTime)); // note we assume we wait at least 15minutes on a no-show patient to see whether he shows or is just late
+                    }else{
+                        patient->scanTime = max(prevScanEndTime,arrivalTime);
+                    }
+                }
+                wt = patient->getScanWT();
+                if(patient->patientType == 1){
+                    movingAvgElectiveScanWT[patient->scanWeek] += wt;
+                }else{
+                    movingAvgUrgentScanWT[patient->scanWeek] += wt;
+                }
+                numberOfPatientsWeek[patient->patientType - 1]++;
+                if(patient->patientType == 1){
+                    avgElectiveScanWT += wt;
+                }else{
+                    avgUrgentScanWT += wt;
+                }
+                numberOfPatients[patient->patientType - 1]++;
+            }
+
+            // OVERTIME
+            if(prevDay > -1 && prevDay != patient->scanDay){
+                if(d == 3 || d == 5){
+                    movingAvgOT[prevWeek] += max(0.0, prevScanEndTime - 13);
+                }else{
+                    movingAvgOT[prevWeek] += max(0.0, prevScanEndTime - 17);
+                }
+                if(d == 3 || d == 5){
+                    avgOT += max(0.0, prevScanEndTime - 13);
+                }else{
+                    avgOT += max(0.0, prevScanEndTime - 17);
+                }
+            }
+
+            // update moving averages if week ends
+            if(prevWeek != patient->scanWeek){
+                movingAvgElectiveScanWT[prevWeek] = movingAvgElectiveScanWT[prevWeek] / numberOfPatientsWeek[0];
+                movingAvgUrgentScanWT[prevWeek] = movingAvgUrgentScanWT[prevWeek] / numberOfPatientsWeek[1];
+                movingAvgOT[prevWeek] = movingAvgOT[prevWeek] / D;
+                numberOfPatientsWeek[0] = 0;
+                numberOfPatientsWeek[1] = 0;
+            }
+
+            //set prev patient
+            if(patient->isNoShow){
+                //prevScanEndTime stays the same, it is the end time of the patient before the no-show patient
+                prevIsNoShow = true;
+            }else{
+                prevScanEndTime = patient->scanTime + patient->duration;
+                prevIsNoShow = false;
+            }
+            prevWeek = patient->scanWeek;
+            prevDay = patient->scanDay;
+        }
+        // update moving averages of the last week
+        movingAvgElectiveScanWT[W-1] = movingAvgElectiveScanWT[W-1] / numberOfPatientsWeek[0];
+        movingAvgUrgentScanWT[W-1] = movingAvgUrgentScanWT[W-1] / numberOfPatientsWeek[1];
+        movingAvgOT[W-1] = movingAvgOT[W-1] / D;
+
+        // calculate objective values
+        avgElectiveScanWT = avgElectiveScanWT / numberOfPatients[0];
+        avgUrgentScanWT = avgUrgentScanWT / numberOfPatients[1];
+        avgOT = avgOT / (D * W);
+
+
+        // print moving avg
+    /*FILE *file = fopen("/Users/tinemeersman/Documents/project SMA 2022 student code /output-movingAvg.txt", "a"); // TODO: use your own directory
+    fprintf(file,"week \t elAppWT \t elScanWT \t urScanWT \t OT \n");
+    for(w = 0; w < W; w++){
+        fprintf(file, "%d \t %.2f \t %.2f \t %.2f \t %.2f \n", w, movingAvgElectiveAppWT[w], movingAvgElectiveScanWT[w], movingAvgUrgentScanWT[w], movingAvgOT[w]);
+    }
+    fclose(file);*/
     }
 
     public int getRandomScanType(){
