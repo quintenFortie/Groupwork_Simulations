@@ -153,7 +153,7 @@ public class Simulation {
                     if(rule == 1){ // FIFO
                         weekSchedule[d][s].appTime = time;
                     }else if(rule == 2){
-                        // TODO: Bailey-Welch rule
+                        // Bailey-Welch rule
                         if ((s==0)||(s==1)){
                             weekSchedule[d][s].appTime = 8;
                         }
@@ -161,7 +161,7 @@ public class Simulation {
                             weekSchedule[d][s].appTime = time - slotLength;
                         }
                     }else if(rule == 3){
-                        // TODO: Blocking rule
+                        // Blocking rule
                         if ((s%2) == 0){
                             weekSchedule[d][s].appTime = time;
                         }
@@ -169,7 +169,7 @@ public class Simulation {
                             weekSchedule[d][s].appTime = time - slotLength;
                         }
                     }else if(rule == 4){
-                        // TODO: Benchmark rule
+                        // Benchmark rule
                         weekSchedule[d][s].appTime = time - k_sigma * stdevElectiveDuration;
                     }
                 }
