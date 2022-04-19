@@ -21,6 +21,13 @@ public class Helper extends Simulation {
         rnd = new Random(seed);
     }
 
+    public int ExponentialDistribution(double lambda) {
+        double j1, j2;
+        j1 = (Math.round(rnd.nextDouble()%1000)/1000.0);
+        if(j1==0) {j1+= 0.0001;}
+        j2 = -Math.log(j1)/lambda;
+        return (int) j2;
+    }
     public int poissonDistribution(double lambda){
         double k, L;
         int p;
