@@ -22,13 +22,38 @@ public class Patient {
         nr = counter;
         patientType = ptype;
         scanType = stype;
-        scanWeek = w;
-        scanDay = d;
+        callWeek = w;
+        callDay = d;
         callTime = cTime;
         tardiness = tard;
         isNoShow = noShow;
         durationScan = duration_scan;
+
+        //unplanned
+        scanWeek = -1;
+        scanDay = -1;
+        slotNr = -1;
+        appTime = -1;
+        scanTime = -1.0;
     }
+
+    //method to return arrivaltime of urgent patient or calltime of elective patient
+
+    public int getCallWeek() {
+        return callWeek;
+    }
+
+
+    public int getCallDay() {
+        return callDay;
+    }
+
+
+    public double getCallTime() {
+        return callTime;
+    }
+
+
 
     // method to return the appointment waiting time
 
