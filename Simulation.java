@@ -221,22 +221,22 @@ public class Simulation {
             for (int d = 0; d < D; d++) { // not on Sunday
                 // generate ELECTIVE patients for this day
                 if (d < D - 1) {  // not on Saturday either then they can't call (elective)
-                    arrivalTimeNext = 8 + helper.Exponential_distribution(lambdaElective, random) * (17 - 8); // moet er nog in komen
+                    arrivalTimeNext = 8 + Helper.Exponential_distribution(lambdaElective, random) * (17 - 8); // moet er nog in komen
                     while (arrivalTimeNext < 17) { // desk open from 8h until 17h
                         patientType = 1;                // elective
                         scanType = 0;                   // no scan type
                         callTime = arrivalTimeNext;     // set call time, i.e. arrival event time
-                        tardiness = helper.Normal_distribution(meanTardiness, stdevTardiness, random) / 60.0;       //this is in hours //in practice this is not known yet at time of call
-                        int f = helper.Bernouilli_distribution(probNoShow, random);                                // in practice this is not known yet at time of call
+                        tardiness = Helper.Normal_distribution(meanTardiness, stdevTardiness, random) / 60.0;       //this is in hours //in practice this is not known yet at time of call
+                        int f = Helper.Bernouilli_distribution(probNoShow, random);                                // in practice this is not known yet at time of call
                         if (f == 0)
                             noShow = true;
                         else
                             noShow = false;
-                        duration_scan = helper.Normal_distribution(meanElectiveDuration, stdevElectiveDuration, random) / 60.0; // in practice this is not known yet at time of call
+                        duration_scan = Helper.Normal_distribution(meanElectiveDuration, stdevElectiveDuration, random) / 60.0; // in practice this is not known yet at time of call
                         Patient patient = new Patient(counter, patientType, scanType, w, d, callTime, tardiness, noShow, duration_scan);
                         patients.add(patient); // patient is added to the patient list
                         counter++;
-                        arrivalTimeNext = arrivalTimeNext + helper.Exponential_distribution(lambdaElective, random) * (17 - 8); // arrival time of next patient (if < 17h)
+                        arrivalTimeNext = arrivalTimeNext + Helper.Exponential_distribution(lambdaElective, random) * (17 - 8); // arrival time of next patient (if < 17h)
                     }
                 }
 
@@ -248,18 +248,18 @@ public class Simulation {
                     lambda = lambdaUrgent[0];
                     endTime = 17;
                 }
-                arrivalTimeNext = 8 + helper.Exponential_distribution(lambda, random) * (endTime - 8);
+                arrivalTimeNext = 8 + Helper.Exponential_distribution(lambda, random) * (endTime - 8);
                 while (arrivalTimeNext < endTime) {   // desk open from 8h until 17h/12h
                     patientType = 2;                // urgent
                     scanType = getRandomScanType(); // set scan type
                     callTime = arrivalTimeNext;     // set arrival time, i.e. arrival event time
                     tardiness = 0;                  // urgent patients have an arrival time = arrival event time
                     noShow = false;                 // urgent patients are never no-show
-                    duration_scan = helper.Normal_distribution(meanUrgentDuration[scanType], stdevUrgentDuration[scanType], random) / 60.0; // in practice this is not known yet at time of arrival
+                    duration_scan = Helper.Normal_distribution(meanUrgentDuration[scanType], stdevUrgentDuration[scanType], random) / 60.0; // in practice this is not known yet at time of arrival
                     Patient patient = new Patient(counter, patientType, scanType, w, d, callTime, tardiness, noShow, duration_scan);
                     patients.add(patient);
                     counter++;
-                    arrivalTimeNext = arrivalTimeNext + helper.Exponential_distribution(lambda, random) * (endTime - 8); // arrival time of next patient (if < 17h)
+                    arrivalTimeNext = arrivalTimeNext + Helper.Exponential_distribution(lambda, random) * (endTime - 8); // arrival time of next patient (if < 17h)
                 }
             }
         }
@@ -285,27 +285,20 @@ public class Simulation {
     public List<Patient> sortPatients_arrivalTime (List<Patient> patientsList)
     {
 
+        Comparator<Patient> compareByWeek = Comparator.comparing(Patient::getCallWeek);
+        Comparator<Patient> compareByDay = Comparator.comparing(Patient::getCallDay);
+        Comparator<Patient> compareByTime = Comparator.comparing(Patient::getCallTime);
 
+        Comparator<Patient> compareByArrivalTime = compareByWeek.thenComparing(compareByDay).thenComparing(compareByTime);
+        List<Patient> returnList = patientsList.stream().sorted(compareByArrivalTime).collect(Collectors.toList());
+        return returnList;
 
-
-
+    }
 
 
     public int schedulePatients(int day, int patientType, double time){
         //sort arrival events (= patient list) on arrival time (call time for elective patients, arrival time for urgent)
-        patients.sort([](const Patient &patient1, const Patient &patient2){
-            if (patient1.callWeek != patient2.callWeek)
-                return patient1.callWeek < patient2.callWeek;
-            if (patient1.callDay != patient2.callDay)
-                return patient1.callDay < patient2.callDay;
-            if (patient1.callTime != patient2.callTime)
-                return patient1.callTime < patient2.callTime;
-            if (patient1.scanType == 2)                             // if arrival time same, urgent patient before elective patient
-                return true;
-            if (patient2.scanType == 2)
-                return false;
-            return true;
-        });
+        //hier moeten we nog gebruik maken van sortPatients_arrivalTime
 
         int week[2] = {0,0}; // week of the next available slot {elective,urgent}
         int day[2] = {0,0}; // day of the next available slot {elective,urgent}
@@ -314,7 +307,7 @@ public class Simulation {
         //find first slot of each patient type (note, we assume each day (i.e. also day 0) has at least one slot of each patient type!)
         //elective
         d = 0;
-        bool found = false;
+        boolean found = false;
         for(s = 0; s < S && !found; s++){
             if(weekSchedule[d][s].patientType == 1){
                 day[0] = d;
@@ -430,26 +423,7 @@ public class Simulation {
         avgElectiveAppWT = avgElectiveAppWT / numberOfElective;
     }
 
-    public void schedulePatients(){
 
-    public void test()
-    {
-        generatePatients();
-        sortPatients_arrivalTime(patients);
-    }
 
-    public void sortPatientsOnAppTime(){
-
-    }
-
-            Comparator<Patient> compareByWeek = Comparator.comparing(Patient::getCallWeek);
-            Comparator<Patient> compareByDay = Comparator.comparing(Patient::getCallDay);
-            Comparator<Patient> compareByTime = Comparator.comparing(Patient::getCallTime);
-
-            Comparator<Patient> compareByArrivalTime = compareByWeek.thenComparing(compareByDay).thenComparing(compareByTime);
-            List<Patient> returnList = patientsList.stream().sorted(compareByArrivalTime).collect(Collectors.toList());
-            return returnList;
-
-    }
 
 }
