@@ -1,5 +1,7 @@
 public class mainclass {
+
     public static void main(String[] args) {
-        // run simulation
+        Simulation sim = new Simulation();
+        sim.runOneSimulation();
     }
 }

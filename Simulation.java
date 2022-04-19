@@ -96,8 +96,6 @@ public class Simulation {
         double objectiveValue = electiveAppWT / weightEl + urgentScanWT / weightUr;
         System.out.printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
 
-
-
         // print results
         // FILE *file = fopen("/Users/tinemeersman/Documents/project SMA 2022 student code /output.txt", "a"); // TODO: use your own directory
         // TODO: print the output you need to a .txt file
@@ -222,7 +220,7 @@ public class Simulation {
                     patient.scanTime = arrivalTime;
                 } else{
                     if(prevIsNoShow){
-                        patient.scanTime =  Math.max(weekSchedule[patient.scanDay][patient.slotNr].startTime, max(prevScanEndTime,arrivalTime)); // note we assume we wait at least 15minutes on a no-show patient to see whether he shows or is just late
+                        patient.scanTime =  Math.max(weekSchedule[patient.scanDay][patient.slotNr].startTime, Math.max(prevScanEndTime,arrivalTime)); // note we assume we wait at least 15minutes on a no-show patient to see whether he shows or is just late
                     }else{
                         patient.scanTime = Math.max(prevScanEndTime,arrivalTime);
                     }
@@ -239,25 +237,25 @@ public class Simulation {
                 }else{
                     avgUrgentScanWT += wt;
                 }
-                numberOfPatients[patient->patientType - 1]++;
+                numberOfPatients[patient.patientType - 1]++;
             }
 
             // OVERTIME
-            if(prevDay > -1 && prevDay != patient->scanDay){
+            if(prevDay > -1 && prevDay != patient.scanDay){
                 if(d == 3 || d == 5){
-                    movingAvgOT[prevWeek] += max(0.0, prevScanEndTime - 13);
+                    movingAvgOT[prevWeek] += Math.max(0.0, prevScanEndTime - 13);
                 }else{
-                    movingAvgOT[prevWeek] += max(0.0, prevScanEndTime - 17);
+                    movingAvgOT[prevWeek] += Math.max(0.0, prevScanEndTime - 17);
                 }
                 if(d == 3 || d == 5){
-                    avgOT += max(0.0, prevScanEndTime - 13);
+                    avgOT += Math.max(0.0, prevScanEndTime - 13);
                 }else{
-                    avgOT += max(0.0, prevScanEndTime - 17);
+                    avgOT += Math.max(0.0, prevScanEndTime - 17);
                 }
             }
 
             // update moving averages if week ends
-            if(prevWeek != patient->scanWeek){
+            if(prevWeek != patient.scanWeek){
                 movingAvgElectiveScanWT[prevWeek] = movingAvgElectiveScanWT[prevWeek] / numberOfPatientsWeek[0];
                 movingAvgUrgentScanWT[prevWeek] = movingAvgUrgentScanWT[prevWeek] / numberOfPatientsWeek[1];
                 movingAvgOT[prevWeek] = movingAvgOT[prevWeek] / D;
@@ -266,15 +264,15 @@ public class Simulation {
             }
 
             //set prev patient
-            if(patient->isNoShow){
+            if(patient.isNoShow){
                 //prevScanEndTime stays the same, it is the end time of the patient before the no-show patient
                 prevIsNoShow = true;
             }else{
-                prevScanEndTime = patient->scanTime + patient->duration;
+                prevScanEndTime = patient.scanTime + patient.durationScan;
                 prevIsNoShow = false;
             }
-            prevWeek = patient->scanWeek;
-            prevDay = patient->scanDay;
+            prevWeek = patient.scanWeek;
+            prevDay = patient.scanDay;
         }
         // update moving averages of the last week
         movingAvgElectiveScanWT[W-1] = movingAvgElectiveScanWT[W-1] / numberOfPatientsWeek[0];
