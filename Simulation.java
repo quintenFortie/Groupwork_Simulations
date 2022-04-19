@@ -10,7 +10,7 @@ import java.util.Random;
 public class Simulation {
 
     /* PARAMETERS GIVEN IN THE ASSIGNMENT */
-    static String inputFileName = " ";
+    static String inputFileName = "/Users/delphine/Documents/Master1_sem2/Simulatie/Exercise 3/Strategy_1.txt"; // wijzig naar eigen pat! (ook verschillend per strategy!)
     int D = 6;                          // amount of days in our schedule
     int amountOTSlotsPerDay =10;        // amount of overtime slots per day
     int S = 32 + amountOTSlotsPerDay;   // total amount of slots per day
@@ -127,8 +127,8 @@ public class Simulation {
             System.out.println("Error opening the file " + inputFileName);
             System.exit(0);
         }
-        for (int s = 0; s<32; s++){
-            for(int d = 0; d < D; d++){
+        for (int d = 0; d<D; d++){
+            for(int s = 0; s<32; s++){
                 weekSchedule[d][s].slotType = inputStream.nextInt();
                 weekSchedule[d][s].patientType = inputStream.nextInt();
             }
