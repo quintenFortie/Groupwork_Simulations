@@ -53,7 +53,17 @@ public class Patient {
         return callTime;
     }
 
+    public int getScanWeek() {
+        return scanWeek;
+    }
 
+    public int getScanDay() {
+        return scanDay;
+    }
+
+    public double getAppTime() {
+        return appTime;
+    }
 
     // method to return the appointment waiting time
 

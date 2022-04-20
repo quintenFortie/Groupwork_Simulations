@@ -198,10 +198,22 @@ public class Simulation {
 
     }
 
+    public List<Patient> sortPatientsOnAppTime()
+    {
+        Comparator<Patient> compareByWeek = Comparator.comparing(Patient::getScanWeek);
+        Comparator<Patient> compareByDay = Comparator.comparing(Patient::getScanDay);
+        Comparator<Patient> compareByTime = Comparator.comparing(Patient::getAppTime);
+
+        Comparator<Patient> compareByAppTime = compareByWeek.thenComparing(compareByDay).thenComparing(compareByTime);
+        List<Patient> returnList = patients.stream().sorted(compareByAppTime).collect(Collectors.toList());
+        return returnList;
+
+    }
+
     public void runOneSimulation() throws IOException {
         generatePatients();         // create patient arrival events (elective patients call, urgent patient arrive at the hospital)
         schedulePatients();         // schedule urgent and elective patients in slots based on their arrival events => detrmine the appointment wait time
-        sortPatientsOnAppTime();   // sort patients on their appointment time (unscheduled patients are grouped at the end of the list)
+        List <Patient> patientsList = sortPatientsOnAppTime();    // sort patients on their appointment time (unscheduled patients are grouped at the end of the list)
 
         // determine scan wait time per patient and overtime per day
         int prevWeek = 0; int prevDay = -1;
@@ -211,8 +223,8 @@ public class Simulation {
         double prevScanEndTime = 0;
         boolean prevIsNoShow = false;
         // go over arrival events (i.e. the moment the patient arrives at the hospital)
-        for(int i = 0; i< patients.size(); i++){
-            Patient patient = patients.get(i);
+        for(int i = 0; i< patientsList.size(); i++){
+            Patient patient = patientsList.get(i);
             if(patient.scanWeek == -1){ // stop at the first unplanned patient
                 break;
             }
