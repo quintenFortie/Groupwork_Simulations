@@ -404,12 +404,12 @@ public class Simulation {
     }
 
 
-    public void schedulePatients(int day, int patientType, double time){
+    public void schedulePatients(){
         //sort arrival events (= patient list) on arrival time (call time for elective patients, arrival time for urgent)
         //hier moeten we nog gebruik maken van sortPatients_arrivalTime
 
         int [] week = new int[]{0,0}; // week of the next available slot {elective,urgent}
-        int [] dag = new int[]{0,0}; // day of the next available slot {elective,urgent}
+        int [] day = new int[]{0,0}; // day of the next available slot {elective,urgent}
         int [] slot = new int[]{0,0}; // slotNr of the next available slot {elective,urgent}
 
         //find first slot of each patient type (note, we assume each day (i.e. also day 0) has at least one slot of each patient type!)
@@ -418,7 +418,7 @@ public class Simulation {
         boolean found = false;
         for(int s = 0; s < S && !found; s++){
             if(weekSchedule[d][s].patientType == 1){
-                dag[0] = d;
+                day[0] = d;
                 slot[0] = s;
                 found = true;
             }
@@ -427,7 +427,7 @@ public class Simulation {
         found = false;
         for(int s = 0; s < S && !found; s++){
             if(weekSchedule[d][s].patientType == 2){
-                dag[1] = d;
+                day[1] = d;
                 slot[1] = s;
                 found = true;
             }
@@ -449,47 +449,47 @@ public class Simulation {
                 // determine week where we start searching for a slot
                 if(patient.callWeek > week[i]){
                     week[i] = patient.callWeek;
-                    dag[i] = 0;
-                    slot[i] = getNextSlotNrFromTime(dag[i], patient.patientType, 0);           // note we assume there is at least one slot of each patient type per day => this line will find first slot of this type
+                    day[i] = 0;
+                    slot[i] = getNextSlotNrFromTime(day[i], patient.patientType, 0);           // note we assume there is at least one slot of each patient type per day => this line will find first slot of this type
                 }
-                // determine day where we start searching for a slot
-                if(patient.callWeek == week[i] && patient.callDay > dag[i]){
-                    dag[i] = patient.callDay;
-                    slot[i] = getNextSlotNrFromTime(dag[i], patient.patientType, 0);           // note we assume there is at least one slot of each patient type per day => this line will find first slot of this type
+                // determine day where we start searching for a slot if week[i] is equal to the callweek of the patient
+                if(patient.callWeek == week[i] && patient.callDay > day[i]){
+                    day[i] = patient.callDay;
+                    slot[i] = getNextSlotNrFromTime(day[i], patient.patientType, 0);           // note we assume there is at least one slot of each patient type per day => this line will find first slot of this type
                 }
                 // determine slot
-                if(patient.callWeek == week[i] && patient.callDay == dag[i] && patient.callTime >= weekSchedule[dag[i]][slot[i]].appTime){
+                if(patient.callWeek == week[i] && patient.callDay == day[i] && patient.callTime >= weekSchedule[day[i]][slot[i]].appTime){
                     // find last slot on day "day[i]"
                     found = false; slotNr = -1;
                     for(int s = S - 1; s >= 0 && !found; s--){
-                        if(weekSchedule[dag[i]][s].patientType == patient.patientType){
+                        if(weekSchedule[day[i]][s].patientType == patient.patientType){
                             found = true;
                             slotNr = s;
                         }
                     }
                     // urgent patients have to be treated on the same day either in normal hours or in overtime (!! make sure there are enough overtime slots)
                     // for elective patients: check if the patient call time is before the last slot, i.e. if the patient can be planned on day "day[i]"
-                    if(patient.patientType == 2 || patient.callTime < weekSchedule[dag[i]][slotNr].appTime){
-                        slot[i] = getNextSlotNrFromTime(dag[i], patient.patientType, patient.callTime);   // find the first elective slot after the call time on day "day[i]"
+                    if(patient.patientType == 2 || patient.callTime < weekSchedule[day[i]][slotNr].appTime){
+                        slot[i] = getNextSlotNrFromTime(day[i], patient.patientType, patient.callTime);   // find the first elective slot after the call time on day "day[i]"
                     }else{
                         // determine the next day
-                        if(dag[i] < D - 1){
-                            dag[i] = dag[i] + 1;
+                        if(day[i] < D - 1){
+                            day[i] = day[i] + 1;
                         }else{
-                            dag[i] = 0;
+                            day[i] = 0;
                             week[i] = week[i] + 1;
                         }
                         if(week[i] < W){   // find the first slot on the next day (if within the planning horizon)
-                            slot[i] = getNextSlotNrFromTime(dag[i], patient.patientType, 0);
+                            slot[i] = getNextSlotNrFromTime(day[i], patient.patientType, 0);
                         }
                     }
                 }
 
                 // schedule the patient
                 patient.scanWeek = week[i];
-                patient.scanDay = dag[i];
+                patient.scanDay = day[i];
                 patient.slotNr = slot[i];
-                patient.appTime = weekSchedule[dag[i]][slot[i]].appTime;
+                patient.appTime = weekSchedule[day[i]][slot[i]].appTime;
 
                 // update moving average elective appointment waiting time
                 if(patient.patientType == 1){
@@ -506,13 +506,13 @@ public class Simulation {
                 }
 
                 // set next slot of the current patient type
-                found = false; int startD = dag[i]; int startS = slot[i] + 1;
+                found = false; int startD = day[i]; int startS = slot[i] + 1;
                 for(int w = week[i]; w < W && !found; w++){
                     for(d = startD; d < D && !found; d++){
                         for(int s = startS; s < S && !found; s++){
                             if(weekSchedule[d][s].patientType == patient.patientType){
                                 week[i] = w;
-                                dag[i] = d;
+                                day[i] = d;
                                 slot[i] = s;
                                 found = true;
                             }
