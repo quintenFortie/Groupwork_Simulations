@@ -60,7 +60,6 @@ public class Simulation {
 
     List<Patient> patients = new ArrayList<Patient>();
     List<Patient> patient = new ArrayList<Patient>(); //iterator?
-    double movingAvgElectiveAppWT;
 
     Random random = new Random();
 
@@ -108,7 +107,7 @@ public class Simulation {
         FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(),true); // APPENDS the text file with anything printed to the file during the rest of the procedure
         PrintWriter printWriter = new PrintWriter(fileWriter); // OPEN OUTPUT FILE
 
-        printWriter.print(); // TODO: fill in what we need!!
+        printWriter.print(""); // TODO: fill in what we need!!
 
         printWriter.close();
 
@@ -247,12 +246,12 @@ public class Simulation {
 
             // OVERTIME
             if(prevDay > -1 && prevDay != patient.scanDay){
-                if(d == 3 || d == 5){
+                if(prevDay == 3 || prevDay == 5){
                     movingAvgOT[prevWeek] += Math.max(0.0, prevScanEndTime - 13);
                 }else{
                     movingAvgOT[prevWeek] += Math.max(0.0, prevScanEndTime - 17);
                 }
-                if(d == 3 || d == 5){
+                if(prevDay == 3 || prevDay == 5){
                     avgOT += Math.max(0.0, prevScanEndTime - 13);
                 }else{
                     avgOT += Math.max(0.0, prevScanEndTime - 17);
@@ -532,8 +531,5 @@ public class Simulation {
         // calculate objective value
         avgElectiveAppWT = avgElectiveAppWT / numberOfElective;
     }
-
-
-
 
 }
