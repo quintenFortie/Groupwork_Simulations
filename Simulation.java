@@ -1,5 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,7 +66,7 @@ public class Simulation {
 
     //////////////////////////////////////////////////////////////////////////  methods ///////////////////////////////////////////////////////////////////////////
 
-    public void runSimulations(){
+    public void runSimulations() throws IOException {
         double electiveAppWT = 0;
         double electiveScanWT = 0;
         double urgentScanWT = 0;
@@ -95,18 +94,25 @@ public class Simulation {
         double objectiveValue = electiveAppWT / weightEl + urgentScanWT / weightUr;
         System.out.printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
 
-        // print results
-        // FILE *file = fopen("/Users/tinemeersman/Documents/project SMA 2022 student code /output.txt", "a"); // TODO: use your own directory
         // TODO: print the output you need to a .txt file
-        // fclose(file);
+        String fileName1 = "runSimulationsOutput.txt";
+        File file = new File(fileName1);
+        // if file doesnt exists, then create it
+        if (!file.exists()) {
+            file.createNewFile(); // create the file
+        } else{
+            PrintWriter writer = new PrintWriter(file); // empty the file
+            writer.print("");
+            writer.close();
+        }
+        FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(),true); // APPENDS the text file with anything printed to the file during the rest of the procedure
+        PrintWriter printWriter = new PrintWriter(fileWriter); // OPEN OUTPUT FILE
 
+        printWriter.print(); // TODO: fill in what we need!!
+
+        printWriter.close();
 
     }
-    /*
-    more variables required here
-     */
-
-
 
     public void setWeekSchedule(){
         // Read and set the slot types (0=none, 1=elective, 2=urgent within normal working hours)
@@ -193,7 +199,7 @@ public class Simulation {
 
     }
 
-    public void runOneSimulation(){
+    public void runOneSimulation() throws IOException {
         generatePatients();         // create patient arrival events (elective patients call, urgent patient arrive at the hospital)
         schedulePatients();         // schedule urgent and elective patients in slots based on their arrival events => detrmine the appointment wait time
         sortPatientsOnAppTime();   // sort patients on their appointment time (unscheduled patients are grouped at the end of the list)
@@ -283,14 +289,26 @@ public class Simulation {
         avgUrgentScanWT = avgUrgentScanWT / numberOfPatients[1];
         avgOT = avgOT / (D * W);
 
-
         // print moving avg
-    /*FILE *file = fopen("/Users/tinemeersman/Documents/project SMA 2022 student code /output-movingAvg.txt", "a"); // TODO: use your own directory
-    fprintf(file,"week \t elAppWT \t elScanWT \t urScanWT \t OT \n");
-    for(w = 0; w < W; w++){
-        fprintf(file, "%d \t %.2f \t %.2f \t %.2f \t %.2f \n", w, movingAvgElectiveAppWT[w], movingAvgElectiveScanWT[w], movingAvgUrgentScanWT[w], movingAvgOT[w]);
+        String fileName1 =  "outputRunOneSimulation.txt";
+        File file = new File(fileName1);
+        // if file doesnt exists, then create it
+        if (!file.exists()) {
+            file.createNewFile(); // create the file
+        } else{
+            PrintWriter writer = new PrintWriter(file); // empty the file
+            writer.print("");
+            writer.close();
+        }
+        FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(),true); // APPENDS the text file with anything printed to the file during the rest of the procedure
+        PrintWriter printWriter = new PrintWriter(fileWriter); // OPEN OUTPUT FILE
+
+        printWriter.printf("week \t elAppWT \t elScanWT \t urScanWT \t OT \n");
+
+        for(int w = 0; w < W; w++){
+        printWriter.printf("%d \t %.2f \t %.2f \t %.2f \t %.2f \n", w, movingAvgElectiveAppWT[w], movingAvgElectiveScanWT[w], movingAvgUrgentScanWT[w], movingAvgOT[w]);
     }
-    fclose(file);*/
+    printWriter.close();
     }
 
     public int getRandomScanType(){
