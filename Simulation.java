@@ -18,13 +18,12 @@ public class Simulation {
     double meanTardiness = 0.0;              // normal distribution of the tardiness: mu = 0 min.;
     double stdevTardiness = 2.5;             // normal distribution of the tardiness: sigma = 2.5 min.
     double probNoShow = 0.02;                // probability of not showing up
-    double lambdaUrgent[]  = {2.5 , 1.25};
+    double []lambdaUrgent = {2.5 , 1.25};
     double meanElectiveDuration = 15.0;      // service time elective patients: normal distr. mu = 15 min.
     double stdevElectiveDuration = 3.0;              // service time elective patients: normal distr. sigma = 3 min.
-    double meanUrgentDuration[] = { 15.0, 17.5 , 22.5, 30.0, 30.0 }; // ST urgent patients: normally distributed per type
-    double stdevUrgentDuration[] = {2.5, 1.0, 2.5, 1.0, 4.5};
-    double changes_frequency_scanType[] = {0.70, 0.10, 0.10, 0.05, 0.05};    // frequency per scan type;
-    double cumulativeProbUrgentType[] = {0.70, 0.80, 0.90, 0.95, 1.0};
+    double []meanUrgentDuration = { 15.0, 17.5 , 22.5, 30.0, 30.0 }; // ST urgent patients: normally distributed per type
+    double []stdevUrgentDuration = {2.5, 1.0, 2.5, 1.0, 4.5};
+    double []cumulativeProbUrgentType = {0.70, 0.80, 0.90, 0.95, 1.0};
     double weightUr = 1.0/9.0;              // weight assigned to the urgent patients
     double weightEl = 1 - weightUr;         // weight assigned to elective patients
     double k_sigma = 0.5;                   // parameter used for the fourth benchmarking rule --> assumed to be 0.5 (given in the assignment)
@@ -43,7 +42,7 @@ public class Simulation {
     int numberOfElectivePatientsPlanned = 0;
 
     // Initialize arrays //
-    Slot weekSchedule[][] = new Slot [D][S];    // 2-dimensional array, filled in by reading in an inputfile
+    Slot[][] weekSchedule = new Slot [D][S];    // 2-dimensional array, filled in by reading in an inputfile
 
     // in C++ - file was dit het volgende:
     // klopt het wat wij doen???
@@ -52,14 +51,14 @@ public class Simulation {
     //    weekSchedule[d] = new Slot[S];
     // }
 
-    double movingAvgElectiveAppWT[] = new double[W];
-    double movingAvgElectiveScanWT[] = new double[W];
-    double movingAvgUrgentScanWT[] = new double[W];
-    double movingAvgOT[] = new double[W];
+    double[] movingAvgElectiveAppWT = new double[W];
+    double[] movingAvgElectiveScanWT = new double[W];
+    double[] movingAvgUrgentScanWT = new double[W];
+    double[] movingAvgOT = new double[W];
 
 
-    List<Patient> patients = new ArrayList<Patient>();
-    List<Patient> patient = new ArrayList<Patient>(); //iterator?
+    List<Patient> patients = new ArrayList<>();
+
 
     Random random = new Random();
 
@@ -217,15 +216,15 @@ public class Simulation {
 
         // determine scan wait time per patient and overtime per day
         int prevWeek = 0; int prevDay = -1;
-        int numberOfPatientsWeek[] = {0,0};
-        int numberOfPatients[] = {0,0};
+        int[] numberOfPatientsWeek = {0,0};
+        int[] numberOfPatients = {0,0};
         double arrivalTime, wt;
         double prevScanEndTime = 0;
         boolean prevIsNoShow = false;
         // go over arrival events (i.e. the moment the patient arrives at the hospital)
         for(int i = 0; i< patientsList.size(); i++){
             Patient patient = patientsList.get(i);
-            if(patient.scanWeek == -1){ // stop at the first unplanned patient
+            if(patient.scanWeek == 999999999){ // stop at the first unplanned patient
                 break;
             }
 
@@ -306,14 +305,9 @@ public class Simulation {
         // if file doesnt exists, then create it
         if (!file.exists()) {
             file.createNewFile(); // create the file
-        } else{
-            PrintWriter writer = new PrintWriter(file); // empty the file
-            writer.print("");
-            writer.close();
         }
         FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(),true); // APPENDS the text file with anything printed to the file during the rest of the procedure
         PrintWriter printWriter = new PrintWriter(fileWriter); // OPEN OUTPUT FILE
-
         printWriter.printf("week \t elAppWT \t elScanWT \t urScanWT \t OT \n");
 
         for(int w = 0; w < W; w++){

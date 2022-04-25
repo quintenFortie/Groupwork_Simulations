@@ -9,13 +9,13 @@ public class Patient {
     int callWeek;
     int callDay;
     double callTime;
-    int scanWeek = -1;
-    int scanDay = -1;
-    int slotNr = -1;
-    double appTime = -1;
+    int scanWeek;
+    int scanDay;
+    int slotNr ;
+    double appTime ;
     double tardiness;
     boolean isNoShow;
-    double scanTime = -1;
+    double scanTime;
     double durationScan;
 
     public Patient(int counter, int ptype, int stype, int w, int d, double cTime, double tard, boolean noShow, double duration_scan) {
@@ -30,7 +30,7 @@ public class Patient {
         durationScan = duration_scan;
 
         //unplanned
-        scanWeek = -1;
+        scanWeek = 999999999;
         scanDay = -1;
         slotNr = -1;
         appTime = -1;
