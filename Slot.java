@@ -5,4 +5,10 @@ public class Slot {
     int patientType;                // type of slot (0=none, 1=elective, 2=urgent within normal working hours, 3=urgent in overtime)
     int slotType;                   // (0=none, 1=elective, 2=urgent)
 
+    public Slot(double startTime, double appTime, int patientType, int slotType) {
+        this.startTime = startTime;
+        this.appTime = appTime;
+        this.patientType = patientType;
+        this.slotType = slotType;
+    }
 }

@@ -116,9 +116,11 @@ public class Simulation {
             exit(0);
         }
         for (int d = 0; d<D; d++){
-            for(int s = 0; s<32; s++){
-                weekSchedule[d][s].slotType = inputStream.nextInt();
-                weekSchedule[d][s].patientType = inputStream.nextInt();
+            for(int s = 0; s<32; s++)
+            {
+                int number = inputStream.nextInt();
+                Slot newSlot = new Slot(0,0,number,number);
+                weekSchedule[d][s] = newSlot;
             }
         }
         inputStream.close();
@@ -126,8 +128,8 @@ public class Simulation {
         // Set the type of the overtime slots (3=urgent in overtime)
         for(int d = 0; d < D; d++){
             for(int s = 32; s < S; s++){
-                weekSchedule[d][s].slotType = 3;
-                weekSchedule[d][s].patientType = 2;
+                Slot newSlot = new Slot(0,0,2,3);
+                weekSchedule[d][s] = newSlot;
             }
         }
 
