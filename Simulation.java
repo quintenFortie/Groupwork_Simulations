@@ -92,7 +92,7 @@ public class Simulation {
         double objectiveValue = electiveAppWT / weightEl + urgentScanWT / weightUr;
         System.out.printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
 
-        // TODO: print the output you need to a .txt file
+
         String fileName1 = "runSimulationsOutput.txt";
         File file = new File(fileName1);
         // if file doesnt exists, then create it
@@ -282,6 +282,9 @@ public class Simulation {
             if(patient.isNoShow){
                 //prevScanEndTime stays the same, it is the end time of the patient before the no-show patient
                 prevIsNoShow = true;
+                if(patient.scanWeek != prevWeek || patient.scanDay != prevDay){
+                    prevScanEndTime = weekSchedule[patient.scanDay][patient.slotNr].startTime;
+                }
             }else{
                 prevScanEndTime = patient.scanTime + patient.durationScan;
                 prevIsNoShow = false;
