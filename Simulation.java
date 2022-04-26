@@ -7,7 +7,7 @@ import static java.lang.System.exit;
 public class Simulation {
 
     /* PARAMETERS GIVEN IN THE ASSIGNMENT */
-    static String inputFileName = "Strategy_1.txt"; // afhankelijk van de strategy!!
+    static String inputFileName = "Strategy_1_14.txt"; // afhankelijk van de strategy!!
     int D = 6;                          // amount of days in our schedule
     int amountOTSlotsPerDay =10;        // amount of overtime slots per day
     int S = 32 + amountOTSlotsPerDay;   // total amount of slots per day
@@ -29,8 +29,8 @@ public class Simulation {
     double k_sigma = 0.5;                   // parameter used for the fourth benchmarking rule --> assumed to be 0.5 (given in the assignment)
 
     /* VARIABLES WE HAVE TO SET OURSELVES */
-    int W = 10;                              // weeks to simulate
-    int R = 5;                              // number of replications
+    int W = 156;                              // weeks to simulate
+    int R = 10;                              // number of replications
     int rule = 1;                           // the appointment scheduling rule to apply
 
     // Initialize variables
@@ -71,6 +71,25 @@ public class Simulation {
         double OT = 0;
         double OV = 0;
         setWeekSchedule();
+
+        String fileName1 = "Output.txt";
+        File file = new File(fileName1);
+        // if file doesnt exists, then create it
+        if (!file.exists()) {
+            file.createNewFile(); // create the file
+        }
+        else
+        {
+            PrintWriter writer = new PrintWriter(file);
+            writer.println("");
+            writer.close();
+        }
+        FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(),true); // APPENDS the text file with anything printed to the file during the rest of the procedure
+        PrintWriter printWriter = new PrintWriter(fileWriter); // OPEN OUTPUT FILE
+        printWriter.printf("week \t elAppWT \t elScanWT \t urScanWT \t OT \n");
+        printWriter.close();
+
+
         System.out.printf("r \t elAppWT \t elScanWT \t urScanWT \t OT \t OV \n");
         // run R replications
         for(int r = 0; r < R; r++){
@@ -93,16 +112,7 @@ public class Simulation {
         System.out.printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
 
 
-        String fileName1 = "Output.txt";
-        File file = new File(fileName1);
-        // if file doesnt exists, then create it
-        if (!file.exists()) {
-            file.createNewFile(); // create the file
-        }
-        FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(),true); // APPENDS the text file with anything printed to the file during the rest of the procedure
-        PrintWriter printWriter = new PrintWriter(fileWriter); // OPEN OUTPUT FILE
-        printWriter.printf("week \t elAppWT \t elScanWT \t urScanWT \t OT \n");
-        printWriter.close();
+
 
     }
 
