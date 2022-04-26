@@ -30,7 +30,7 @@ public class Simulation {
 
     /* VARIABLES WE HAVE TO SET OURSELVES */
     int W = 10;                              // weeks to simulate
-    int R = 1;                              // number of replications
+    int R = 5;                              // number of replications
     int rule = 1;                           // the appointment scheduling rule to apply
 
     // Initialize variables
@@ -93,21 +93,15 @@ public class Simulation {
         System.out.printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
 
 
-        String fileName1 = "runSimulationsOutput.txt";
+        String fileName1 = "Output.txt";
         File file = new File(fileName1);
         // if file doesnt exists, then create it
         if (!file.exists()) {
             file.createNewFile(); // create the file
-        } else{
-            PrintWriter writer = new PrintWriter(file); // empty the file
-            writer.print("");
-            writer.close();
         }
         FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(),true); // APPENDS the text file with anything printed to the file during the rest of the procedure
         PrintWriter printWriter = new PrintWriter(fileWriter); // OPEN OUTPUT FILE
-
-        printWriter.print(""); // TODO: fill in what we need!!
-
+        printWriter.printf("week \t elAppWT \t elScanWT \t urScanWT \t OT \n");
         printWriter.close();
 
     }
@@ -303,7 +297,7 @@ public class Simulation {
         avgOT = avgOT / (D * W);
 
         // print moving avg
-        String fileName1 =  "outputRunOneSimulation.txt";
+        String fileName1 =  "Output.txt";
         File file = new File(fileName1);
         // if file doesnt exists, then create it
         if (!file.exists()) {
@@ -311,7 +305,7 @@ public class Simulation {
         }
         FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(),true); // APPENDS the text file with anything printed to the file during the rest of the procedure
         PrintWriter printWriter = new PrintWriter(fileWriter); // OPEN OUTPUT FILE
-        printWriter.printf("week \t elAppWT \t elScanWT \t urScanWT \t OT \n");
+
 
         for(int w = 0; w < W; w++){
         printWriter.printf("%d \t %.2f \t %.2f \t %.2f \t %.2f \n", w, movingAvgElectiveAppWT[w], movingAvgElectiveScanWT[w], movingAvgUrgentScanWT[w], movingAvgOT[w]);
