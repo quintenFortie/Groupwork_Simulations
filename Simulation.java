@@ -26,7 +26,7 @@ public class Simulation {
     double []stdevUrgentDuration = {2.5, 1.0, 2.5, 1.0, 4.5};
     double []cumulativeProbUrgentType = {0.70, 0.80, 0.90, 0.95, 1.0};
     double weightUr = 1.0/9.0;              // weight assigned to the urgent patients
-    double weightEl = 1.0/168.0;         // weight assigned to elective patients
+    double weightEl = 1.0/168.0;            // weight assigned to elective patients
     double k_sigma = 0.5;                   // parameter used for the fourth benchmarking rule --> assumed to be 0.5 (given in the assignment)
 
     /* VARIABLES WE HAVE TO SET OURSELVES */
