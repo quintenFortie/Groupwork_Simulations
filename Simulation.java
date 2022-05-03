@@ -7,7 +7,8 @@ import static java.lang.System.exit;
 public class Simulation {
 
     /* PARAMETERS GIVEN IN THE ASSIGNMENT */
-    static String inputFileName = "Strategy_1_14.txt"; // afhankelijk van de strategy!!
+    static String inputFileName =
+            "Strategy1/Strategy_1_14.txt"; // afhankelijk van de strategy!!
     int D = 6;                          // amount of days in our schedule
     int amountOTSlotsPerDay =10;        // amount of overtime slots per day
     int S = 32 + amountOTSlotsPerDay;   // total amount of slots per day
@@ -25,7 +26,7 @@ public class Simulation {
     double []stdevUrgentDuration = {2.5, 1.0, 2.5, 1.0, 4.5};
     double []cumulativeProbUrgentType = {0.70, 0.80, 0.90, 0.95, 1.0};
     double weightUr = 1.0/9.0;              // weight assigned to the urgent patients
-    double weightEl = 1 - weightUr;         // weight assigned to elective patients
+    double weightEl = 1.0/168.0;         // weight assigned to elective patients
     double k_sigma = 0.5;                   // parameter used for the fourth benchmarking rule --> assumed to be 0.5 (given in the assignment)
 
     /* VARIABLES WE HAVE TO SET OURSELVES */
@@ -100,15 +101,15 @@ public class Simulation {
             electiveScanWT += avgElectiveScanWT;
             urgentScanWT += avgUrgentScanWT;
             OT += avgOT;
-            OV += avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr;
-            System.out.printf("%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", r, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT / weightEl + avgUrgentScanWT / weightUr);
+            OV += avgElectiveAppWT * weightEl + avgUrgentScanWT * weightUr;
+            System.out.printf("%d \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", r, avgElectiveAppWT, avgElectiveScanWT, avgUrgentScanWT, avgOT, avgElectiveAppWT * weightEl + avgUrgentScanWT * weightUr);
         }
         electiveAppWT = electiveAppWT / R;
         electiveScanWT = electiveScanWT / R;
         urgentScanWT = urgentScanWT / R;
         OT = OT / R;
         OV = OV / R;
-        double objectiveValue = electiveAppWT / weightEl + urgentScanWT / weightUr;
+        double objectiveValue = electiveAppWT * weightEl + urgentScanWT * weightUr;
         System.out.printf("Avg.: \t %.2f \t %.2f \t %.2f \t %.2f \t %.2f \n", electiveAppWT, electiveScanWT, urgentScanWT, OT, objectiveValue);
 
 
