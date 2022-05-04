@@ -8,7 +8,7 @@ public class Simulation {
 
     /* PARAMETERS GIVEN IN THE ASSIGNMENT */
     static String inputFileName =
-            "Strategy1/Strategy_1_14.txt"; // afhankelijk van de strategy!!
+            "Strategy1/Strategy_1_13.txt"; // afhankelijk van de strategy!!
     int D = 6;                          // amount of days in our schedule
     int amountOTSlotsPerDay =10;        // amount of overtime slots per day
     int S = 32 + amountOTSlotsPerDay;   // total amount of slots per day
@@ -26,13 +26,14 @@ public class Simulation {
     double []stdevUrgentDuration = {2.5, 1.0, 2.5, 1.0, 4.5};
     double []cumulativeProbUrgentType = {0.70, 0.80, 0.90, 0.95, 1.0};
     double weightUr = 1.0/9.0;              // weight assigned to the urgent patients
-    double weightEl = 1.0/168.0;            // weight assigned to elective patients
+    double weightEl = 1.0/168.0;         // weight assigned to elective patients
     double k_sigma = 0.5;                   // parameter used for the fourth benchmarking rule --> assumed to be 0.5 (given in the assignment)
 
     /* VARIABLES WE HAVE TO SET OURSELVES */
     int W = 156;                              // weeks to simulate
-    int R = 10;                              // number of replications
+    int R = 20;                              // number of replications
     int rule = 1;                           // the appointment scheduling rule to apply
+    //1= FCFS //2 = Bailey-Welch//3 = Blocking//4 = Benchmarking
 
     // Initialize variables
     double avgElectiveAppWT = 0;
@@ -87,7 +88,7 @@ public class Simulation {
         }
         FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(),true); // APPENDS the text file with anything printed to the file during the rest of the procedure
         PrintWriter printWriter = new PrintWriter(fileWriter); // OPEN OUTPUT FILE
-        printWriter.printf("week \t elAppWT \t elScanWT \t urScanWT \t OT \n");
+        printWriter.printf("elAppWT \t elScanWT \t urScanWT \t OT \n");
         printWriter.close();
 
 
@@ -321,7 +322,7 @@ public class Simulation {
 
 
         for(int w = 0; w < W; w++){
-        printWriter.printf("%d \t %.2f \t %.2f \t %.2f \t %.2f \n", w, movingAvgElectiveAppWT[w], movingAvgElectiveScanWT[w], movingAvgUrgentScanWT[w], movingAvgOT[w]);
+        printWriter.printf("%.2f \t %.2f \t %.2f \t %.2f \n", movingAvgElectiveAppWT[w], movingAvgElectiveScanWT[w], movingAvgUrgentScanWT[w], movingAvgOT[w]);
     }
     printWriter.close();
     }
