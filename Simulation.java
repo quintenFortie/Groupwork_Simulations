@@ -7,8 +7,7 @@ import static java.lang.System.exit;
 public class Simulation {
 
     /* PARAMETERS GIVEN IN THE ASSIGNMENT */
-    static String inputFileName =
-            "Strategy1/Strategy_1_14.txt"; // afhankelijk van de strategy!!
+
     int D = 6;                          // amount of days in our schedule
     int amountOTSlotsPerDay =10;        // amount of overtime slots per day
     int S = 32 + amountOTSlotsPerDay;   // total amount of slots per day
@@ -32,9 +31,11 @@ public class Simulation {
 
     /* VARIABLES WE HAVE TO SET OURSELVES */
     int W = 156;                              // weeks to simulate
-    int R = 20;                              // number of replications
-    boolean firstExperiment = false;
-    int rule = 2;                            // the appointment scheduling rule to apply
+    int R = 20;                                 // number of replications
+    static String inputFileName = "Strategy1/Strategy_1_14.txt"; // afhankelijk van de strategy!!
+    boolean firstExperiment = false; //nu afblijven lijsten zijn gemaakt
+    boolean complementary = false;
+    int rule = 1;                            // the appointment scheduling rule to apply
     //1= FCFS //2 = Bailey-Welch//3 = Blocking//4 = Benchmarking
 
     // Initialize variables
@@ -67,7 +68,6 @@ public class Simulation {
     Random random = new Random();
 
     //////////////////////////////////////////////////////////////////////////  methods ///////////////////////////////////////////////////////////////////////////
-
     public void runSimulations() throws IOException {
         double electiveAppWT = 0;
         double electiveScanWT = 0;
@@ -356,22 +356,22 @@ public class Simulation {
             for (int d = 0; d < D; d++) { // not on Sunday
                 // generate ELECTIVE patients for this day
                 if (d < D - 1) {  // not on Saturday either then they can't call (elective)
-                    arrivalTimeNext = 8 + Helper.Exponential_distribution(lambdaElective, random) * (17 - 8);// moet er nog in komen
+                    arrivalTimeNext = 8 + Helper.Exponential_distribution(lambdaElective, random, complementary) * (17 - 8);
                     while (arrivalTimeNext < 17) { // desk open from 8h until 17h
                         patientType = 1;                // elective
                         scanType = 0;                   // no scan type
                         callTime = arrivalTimeNext;     // set call time, i.e. arrival event time
-                        tardiness = Helper.Normal_distribution(meanTardiness, stdevTardiness, random) / 60.0;       //this is in hours //in practice this is not known yet at time of call
-                        int f = Helper.Bernouilli_distribution(probNoShow, random); // in practice this is not known yet at time of call
+                        tardiness = Helper.Normal_distribution(meanTardiness, stdevTardiness, random,complementary) / 60.0;       //this is in hours //in practice this is not known yet at time of call
+                        int f = Helper.Bernouilli_distribution(probNoShow, random,complementary); // in practice this is not known yet at time of call
                         if (f == 0)
                             noShow = true;
                         else
                             noShow = false;
-                        duration_scan = Helper.Normal_distribution(meanElectiveDuration, stdevElectiveDuration, random) / 60.0; // in practice this is not known yet at time of call
+                        duration_scan = Helper.Normal_distribution(meanElectiveDuration, stdevElectiveDuration, random,complementary) / 60.0; // in practice this is not known yet at time of call
                         Patient patient = new Patient(counter, patientType, scanType, w, d, callTime, tardiness, noShow, duration_scan);
                         patients.add(patient); // patient is added to the patient list
                         counter++;
-                        arrivalTimeNext = arrivalTimeNext + Helper.Exponential_distribution(lambdaElective, random) * (17 - 8); // arrival time of next patient (if < 17h)
+                        arrivalTimeNext = arrivalTimeNext + Helper.Exponential_distribution(lambdaElective, random,complementary) * (17 - 8); // arrival time of next patient (if < 17h)
                     }
                 }
 
@@ -383,18 +383,18 @@ public class Simulation {
                     lambda = lambdaUrgent[0];
                     endTime = 17;
                 }
-                arrivalTimeNext = 8 + Helper.Exponential_distribution(lambda, random) * (endTime - 8);
+                arrivalTimeNext = 8 + Helper.Exponential_distribution(lambda, random,complementary) * (endTime - 8);
                 while (arrivalTimeNext < endTime) {   // desk open from 8h until 17h/12h
                     patientType = 2;                // urgent
                     scanType = getRandomScanType(); // set scan type
                     callTime = arrivalTimeNext;     // set arrival time, i.e. arrival event time
                     tardiness = 0;                  // urgent patients have an arrival time = arrival event time
                     noShow = false;                 // urgent patients are never no-show
-                    duration_scan = Helper.Normal_distribution(meanUrgentDuration[scanType], stdevUrgentDuration[scanType], random) / 60.0; // in practice this is not known yet at time of arrival
+                    duration_scan = Helper.Normal_distribution(meanUrgentDuration[scanType], stdevUrgentDuration[scanType], random,complementary) / 60.0; // in practice this is not known yet at time of arrival
                     Patient patient = new Patient(counter, patientType, scanType, w, d, callTime, tardiness, noShow, duration_scan);
                     patients.add(patient);
                     counter++;
-                    arrivalTimeNext = arrivalTimeNext + Helper.Exponential_distribution(lambda, random) * (endTime - 8); // arrival time of next patient (if < 17h)
+                    arrivalTimeNext = arrivalTimeNext + Helper.Exponential_distribution(lambda, random,complementary) * (endTime - 8); // arrival time of next patient (if < 17h)
                 }
             }
         }
@@ -404,13 +404,22 @@ public class Simulation {
     {
         Scanner inputStream = null;
         try{
-            inputStream = new Scanner(new File("PatientList"+replication+".txt"));
+            String complement;
+            if(complementary)
+            {
+                complement = "1";
+            }
+            else
+            {
+                complement = "0";
+            }
+            inputStream = new Scanner(new File("PatientList"+replication+"_"+complement+".txt"));
         } catch (FileNotFoundException e) {
             System.out.println("Error opening the file " + inputFileName);
             exit(0);
         }
         //read first line
-        System.out.println(inputStream.nextLine());
+        inputStream.nextLine();
         while (inputStream.hasNext())
         {
             //reading of 1 line
@@ -464,7 +473,16 @@ public class Simulation {
 
     public void printPatientlistToFile (List<Patient> patientsList) throws IOException {
         // print moving avg
-        String fileName1 =  "PatientList"+replication+".txt";
+        String complement;
+        if (complementary)
+        {
+             complement = "1";
+        }
+        else
+        {
+             complement = "0";
+        }
+        String fileName1 =  "PatientList"+replication+"_"+complement+".txt";
         File file = new File(fileName1);
         // if file doesnt exists, then create it
         if (!file.exists()) {
