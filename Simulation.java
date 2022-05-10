@@ -8,7 +8,7 @@ public class Simulation {
 
     /* PARAMETERS GIVEN IN THE ASSIGNMENT */
     static String inputFileName =
-            "Strategy1/Strategy_1_13.txt"; // afhankelijk van de strategy!!
+            "Strategy1/Strategy_1_14.txt"; // afhankelijk van de strategy!!
     int D = 6;                          // amount of days in our schedule
     int amountOTSlotsPerDay =10;        // amount of overtime slots per day
     int S = 32 + amountOTSlotsPerDay;   // total amount of slots per day
@@ -27,12 +27,14 @@ public class Simulation {
     double []cumulativeProbUrgentType = {0.70, 0.80, 0.90, 0.95, 1.0};
     double weightUr = 1.0/9.0;              // weight assigned to the urgent patients
     double weightEl = 1.0/168.0;         // weight assigned to elective patients
-    double k_sigma = 0.5;                   // parameter used for the fourth benchmarking rule --> assumed to be 0.5 (given in the assignment)
+    double k_sigma = 0.5;   // parameter used for the fourth benchmarking rule --> assumed to be 0.5 (given in the assignment)
+    int replication=0;
 
     /* VARIABLES WE HAVE TO SET OURSELVES */
     int W = 156;                              // weeks to simulate
     int R = 20;                              // number of replications
-    int rule = 1;                           // the appointment scheduling rule to apply
+    boolean firstExperiment = false;
+    int rule = 2;                            // the appointment scheduling rule to apply
     //1= FCFS //2 = Bailey-Welch//3 = Blocking//4 = Benchmarking
 
     // Initialize variables
@@ -95,9 +97,11 @@ public class Simulation {
         System.out.printf("r \t elAppWT \t elScanWT \t urScanWT \t OT \t OV \n");
         // run R replications
         for(int r = 0; r < R; r++){
+            replication = r;
             resetSystem();                          // reset all variables related to 1 replication
             random.setSeed(r);                      // set seed value for random value generator
             runOneSimulation();                     // run 1 simulation / replication
+
             electiveAppWT += avgElectiveAppWT;
             electiveScanWT += avgElectiveScanWT;
             urgentScanWT += avgUrgentScanWT;
@@ -218,7 +222,13 @@ public class Simulation {
     }
 
     public void runOneSimulation() throws IOException {
-        generatePatients();         // create patient arrival events (elective patients call, urgent patient arrive at the hospital)
+        if(firstExperiment)
+        {generatePatients();}
+        else
+        {
+            readPatientList();
+        }
+        // create patient arrival events (elective patients call, urgent patient arrive at the hospital)
         schedulePatients();         // schedule urgent and elective patients in slots based on their arrival events => detrmine the appointment wait time
         List <Patient> patientsList = sortPatientsOnAppTime();    // sort patients on their appointment time (unscheduled patients are grouped at the end of the list)
 
@@ -346,13 +356,13 @@ public class Simulation {
             for (int d = 0; d < D; d++) { // not on Sunday
                 // generate ELECTIVE patients for this day
                 if (d < D - 1) {  // not on Saturday either then they can't call (elective)
-                    arrivalTimeNext = 8 + Helper.Exponential_distribution(lambdaElective, random) * (17 - 8); // moet er nog in komen
+                    arrivalTimeNext = 8 + Helper.Exponential_distribution(lambdaElective, random) * (17 - 8);// moet er nog in komen
                     while (arrivalTimeNext < 17) { // desk open from 8h until 17h
                         patientType = 1;                // elective
                         scanType = 0;                   // no scan type
                         callTime = arrivalTimeNext;     // set call time, i.e. arrival event time
                         tardiness = Helper.Normal_distribution(meanTardiness, stdevTardiness, random) / 60.0;       //this is in hours //in practice this is not known yet at time of call
-                        int f = Helper.Bernouilli_distribution(probNoShow, random);                                // in practice this is not known yet at time of call
+                        int f = Helper.Bernouilli_distribution(probNoShow, random); // in practice this is not known yet at time of call
                         if (f == 0)
                             noShow = true;
                         else
@@ -390,6 +400,38 @@ public class Simulation {
         }
     }
 
+    public void readPatientList ()
+    {
+        Scanner inputStream = null;
+        try{
+            inputStream = new Scanner(new File("PatientList"+replication+".txt"));
+        } catch (FileNotFoundException e) {
+            System.out.println("Error opening the file " + inputFileName);
+            exit(0);
+        }
+        //read first line
+        System.out.println(inputStream.nextLine());
+        while (inputStream.hasNext())
+        {
+            //reading of 1 line
+            int counter = inputStream.nextInt();
+            int patientType = inputStream.nextInt();
+            int scanType = inputStream.nextInt();
+            int w = inputStream.nextInt();
+            int d = inputStream.nextInt();
+            double callTime = Double.parseDouble(inputStream.next());
+            double tardiness = Double.parseDouble(inputStream.next());
+            boolean noShow = inputStream.nextBoolean();
+            double duration_scan = Double.parseDouble(inputStream.next());
+            Patient patient = new Patient(counter, patientType, scanType, w, d, callTime, tardiness, noShow, duration_scan);
+            patients.add(patient);
+
+        }
+
+        inputStream.close();
+
+    }
+
     public int getNextSlotNrFromTime (int day, int patientType,double time)
     {
             boolean found = false;
@@ -407,8 +449,7 @@ public class Simulation {
             return slotNr;
     }
 
-    public List<Patient> sortPatients_arrivalTime (List<Patient> patientsList)
-    {
+    public List<Patient> sortPatients_arrivalTime (List<Patient> patientsList) throws IOException {
 
         Comparator<Patient> compareByWeek = Comparator.comparing(Patient::getCallWeek);
         Comparator<Patient> compareByDay = Comparator.comparing(Patient::getCallDay);
@@ -416,12 +457,38 @@ public class Simulation {
 
         Comparator<Patient> compareByArrivalTime = compareByWeek.thenComparing(compareByDay).thenComparing(compareByTime);
         List<Patient> returnList = patientsList.stream().sorted(compareByArrivalTime).collect(Collectors.toList());
+        printPatientlistToFile(returnList);
         return returnList;
 
     }
 
+    public void printPatientlistToFile (List<Patient> patientsList) throws IOException {
+        // print moving avg
+        String fileName1 =  "PatientList"+replication+".txt";
+        File file = new File(fileName1);
+        // if file doesnt exists, then create it
+        if (!file.exists()) {
+            file.createNewFile(); // create the file
+        }
+        else
+        {
+            PrintWriter writer = new PrintWriter(file);
+            writer.print("");
+            writer.close();
+        }
+        FileWriter fileWriter = new FileWriter(file.getAbsoluteFile(),true); // APPENDS the text file with anything printed to the file during the rest of the procedure
+        PrintWriter printWriter = new PrintWriter(fileWriter); // OPEN OUTPUT FILE
 
-    public void schedulePatients(){
+        printWriter.println("Patient Number"+"\t"+"Patienttype"+"\t"+"Scantype"+"\t"+"Callweek"+"\t"+"Callday"+"\t"+"Calltime"+"\t"+"Tardiness"+"\t"+"IsNoShow"+"\t"+"Duration of scan");
+        for(int p = 0; p < patientsList.size(); p++){
+            printWriter.println(patientsList.get(p).nr + "\t" +  patientsList.get(p).patientType + "\t" + patientsList.get(p).scanType + "\t" + patientsList.get(p).callWeek + "\t" + patientsList.get(p).callDay + "\t" +patientsList.get(p).callTime + "\t" +patientsList.get(p).tardiness + "\t" + patientsList.get(p).isNoShow + "\t" +patientsList.get(p).durationScan);
+        }
+        printWriter.close();
+
+    }
+
+
+    public void schedulePatients() throws IOException {
         //sort arrival events (= patient list) on arrival time (call time for elective patients, arrival time for urgent)
         //hier moeten we nog gebruik maken van sortPatients_arrivalTime
 
