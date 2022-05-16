@@ -181,7 +181,7 @@ public class Simulation {
 
                 //update time variable
                 time += slotLength;
-                if(time == 12){ time = 13;} // skip to the end of the luchbreak
+                if(time == 12){ time = 13;} 
             }
         }
     }
