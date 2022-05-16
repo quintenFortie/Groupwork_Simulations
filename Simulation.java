@@ -14,7 +14,7 @@ public class Simulation {
     double slotLength = 15.0/60;        // each slot takes 15 minutes (0,25 hours)
     double lambdaElective = 28.345;       // number of elective arrivals per day: Poisson distributed lambda = 28,345
 
-    // Deze heb ik er zelf bijgezet -- kijken jullie na?? //
+    
     double meanTardiness = 0.0;              // normal distribution of the tardiness: mu = 0 min.;
     double stdevTardiness = 2.5;             // normal distribution of the tardiness: sigma = 2.5 min.
     double probNoShow = 0.02;                // probability of not showing up
@@ -32,8 +32,8 @@ public class Simulation {
     /* VARIABLES WE HAVE TO SET OURSELVES */
     int W = 156;                              // weeks to simulate
     int R = 20;                                 // number of replications
-    static String inputFileName = "Strategy1/Strategy_1_14.txt"; // afhankelijk van de strategy!!
-    boolean firstExperiment = false; //nu afblijven lijsten zijn gemaakt
+    static String inputFileName = "Strategy1/Strategy_1_14.txt"; // depended on the strategy
+    boolean firstExperiment = false; 
     boolean complementary = false;
     int rule = 1;                            // the appointment scheduling rule to apply
     //1= FCFS //2 = Bailey-Welch//3 = Blocking//4 = Benchmarking
@@ -49,12 +49,7 @@ public class Simulation {
     // Initialize arrays //
     Slot[][] weekSchedule = new Slot [D][S];    // 2-dimensional array, filled in by reading in an inputfile
 
-    // in C++ - file was dit het volgende:
-    // klopt het wat wij doen???
-    // weekSchedule = new Slot*[D];
-    // for(d = 0; d < D; d++){
-    //    weekSchedule[d] = new Slot[S];
-    // }
+  
 
     double[] movingAvgElectiveAppWT = new double[W];
     double[] movingAvgElectiveScanWT = new double[W];
